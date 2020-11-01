@@ -1,0 +1,66 @@
+pipeline {
+
+  agent {
+    kubernetes {
+      //cloud 'kubernetes'
+      label 'jenkins-k8s'
+      
+      label 'promo-app'  // all your pods will be named with this prefix, followed by a unique id
+      idleMinutes 5  // how long the pod will live after no jobs have run on it
+      yamlFile 'build-pod.yaml'  // path to the pod definition relative to the root of our project 
+      defaultContainer 'maven'  // define a default container if more than a few stages use it, will default to jnlp container
+      
+      containerTemplate {
+        name 'maven'
+        image 'maven:3.3.9-jdk-8-alpine'
+        ttyEnabled true
+        command 'cat'
+      }
+    }
+    maven {
+      customWorkspace '/mnt/maven'
+      defaultContainer 'maven'
+      yamlFile 'MavenPod.yaml'
+    }
+  }
+  
+  stages {
+    stage('Checkout Source') {
+      steps {
+        git url:'https://github.com/aymenabdelwahed/hellowhale.git', branch:'master'
+      }
+    }
+    
+    stage("Build Image") {
+      steps {
+        script {
+          appimage = docker.build("aymenabdelwahed/hellowhale:v0.${env.BUILD_ID}")
+        }
+      }
+    }
+    
+    stage("Push Image") {
+      steps {
+        script {
+          docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+            appimage.push("latest")
+            appimage.push("${env.BUILD_ID}")
+          }
+        }
+      }
+    }
+    
+    stage('Deploy App') {
+      when {
+        branch 'master'
+      }
+      steps {
+        echo 'Deploying..'
+        input message: 'Finished using the app? (Click "Proceed" to continue)'
+        container('docker') {
+          kubernetesDeploy(configs: "hellowhale.yml", kubeconfigId: "kubeConfig")
+        }
+      }
+    }
+  }
+}
