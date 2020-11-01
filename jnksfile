@@ -24,7 +24,7 @@ pipeline {
     stage("Build Image") {
       steps {
         script {
-          appimage = docker.build("aymenabdelwahed/hellowhale:v0.${env.BUILD_ID}")
+          appimage = docker.build(DOCKER_IMAGE_NAME)
         }
       }
     }
