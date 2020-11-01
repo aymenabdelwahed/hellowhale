@@ -51,7 +51,7 @@ pipeline {
           kubernetesDeploy(
             configs: "hellowhale.yml", 
             kubeconfigId: "kubeConfig",
-            enableConfigSubstitution: true
+            enableConfigSubstitution: true    // Replace variables within the Resource Definition files
             )
         }
       }
