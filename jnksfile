@@ -48,7 +48,11 @@ pipeline {
         echo 'Deploying..'
         input message: 'Finished using the app? (Click "Proceed" to continue)'
         container('docker') {
-          kubernetesDeploy(configs: "hellowhale.yml", kubeconfigId: "kubeConfig")
+          kubernetesDeploy(
+            configs: "hellowhale.yml", 
+            kubeconfigId: "kubeConfig",
+            enableConfigSubstitution: true
+            )
         }
       }
     }
