@@ -29,7 +29,12 @@ pipeline {
     }
     
     stage('Deploy App') {
+      when {
+        branch 'master'
+      }
       steps {
+        echo 'Deploying..'
+        input message: 'Finished using the app? (Click "Proceed" to continue)'
         script {
           kubernetesDeploy(configs: "hellowhale.yml", kubeconfigId: "kubeConfig")
         }
