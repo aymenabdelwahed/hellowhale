@@ -12,7 +12,7 @@ pipeline {
     stage("Build image") {
       steps {
         script {
-          appimage = docker.build("aymenabdelwahed/hellowhale:${env.BUILD_ID}")
+          appimage = docker.build("aymenabdelwahed/hellowhale:v0.${env.BUILD_ID}")
         }
       }
     }
