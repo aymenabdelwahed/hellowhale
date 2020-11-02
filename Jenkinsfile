@@ -1,6 +1,6 @@
 pipeline {
 
-  agent any
+  agent { label 'jenkins-k8s' }
 
   stages {
     stage('Checkout Source') {
@@ -36,7 +36,7 @@ pipeline {
         echo 'Deploying..'
         input message: 'Finished using the app? (Click "Proceed" to continue)'
         script {
-          kubernetesDeploy(configs: "hellowhale.yml", kubeconfigId: "kubeConfig")
+          kubernetesDeploy(configs: "hellowhale.yml", kubeconfigId: "clusterK8sConfig")
         }
       }
     }
