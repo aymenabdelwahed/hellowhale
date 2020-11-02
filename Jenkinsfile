@@ -36,7 +36,7 @@ pipeline {
         echo 'Deploying..'
         input message: 'Finished using the app? (Click "Proceed" to continue)'
         script {
-          kubernetesDeploy(configs: "hellowhale.yml", kubeconfigId: "clusterK8sConfig")
+          kubernetesDeploy(configs: "hellowhale.yml", kubeconfigId: "myKubeConfig")
         }
       }
     }
